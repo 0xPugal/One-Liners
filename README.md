@@ -112,5 +112,13 @@ cat wayback.txt | gf ssrf | sort -u |anew | httpx | qsreplace 'burpcollaborator_
 cat urls.txt | qsreplace "?admin=true" | gau | phpgcc | anew | kxss | awk  -v  -q txt | sed 's/http/\nhttp/g' | grep ^http | sed 's/\(^http[^ <]*\)\(.*\)/\1/g' | grep -vi -e dalfox -e lElLxtainw| sort -u | waybackurls
 ```
 
+**Extract sensitive end-point in JS**
+
+```
+cat main.js | grep -oh "\"\/[a-zA-Z0-9_/?=&]*\"" | sed -e 's/^"//' -e 's/"$//' | sort -u
+```
+
+
+
 
 **More Scripts Coming Sooon.....**
