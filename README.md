@@ -289,5 +289,7 @@ findomain -t http://testphp.vulnweb.com -q | httpx -silent | anew | waybackurls 
 grep "="  .txt| qsreplace "' OR '1" | httpx -silent -store-response-dir output -threads 100 | grep -q -rn "syntax\|mysql" output 2>/dev/null && \printf "TARGET \033[0;32mCould Be Exploitable\e[m\n" || printf "TARGET \033[0;31mNot Vulnerable\e[m\n"
 ```
 __________________________________________________________________________________________________________________________________________________________________
+***More Scripts Coming Sooon :)***
+__________________________________________________________________________________________________________________________________________________________________
 ### Support :)
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/paypalme/litt1eb0y)
