@@ -3,7 +3,7 @@
 
 ![jst-1-line](https://user-images.githubusercontent.com/75373225/148362632-424b3936-6c95-41e8-b296-4e0931e40f1e.png)
 
-# Subdoamin Enumeration
+# Subdomain Enumeration
 ```
 subfinder -d target.com -silent; assetfinder -subs-only target.com; findomanin -t target.com -quiet; amass enum -d target.com; python3 /path/sublist3r.py -d target.com -q; python3 /path/turbolister.py -d target.com -q | httpx -silent | sort -u >> live-subs.txt
 ```
