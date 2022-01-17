@@ -3,67 +3,10 @@
 
 ![jst-1-line](https://user-images.githubusercontent.com/75373225/148362632-424b3936-6c95-41e8-b296-4e0931e40f1e.png)
 
-# Find Subdomains from Various Sources:
-### Get Subdomains from RapidDNS.io
+# Subdoamin Enumeration
 ```
-curl -s "https://rapiddns.io/subdomain/$1?full=1#result" | grep "<td><a" | cut -d '"' -f 2 | grep http | cut -d '/' -f3 | sed 's/#results//g' | sort -u
+subfinder -d target.com -silent; assetfinder -subs-only target.com; findomanin -t target.com -quiet; amass enum -d target.com; python3 /path/sublist3r.py -d target.com -q; python3 /path/turbolister.py -d target.com -q | httpx -silent | sort -u >> live-subs.txt
 ```
-### Get Subdomains from BufferOver.run
-```
-curl -s https://dns.bufferover.run/dns?q=.DOMAIN.com |jq -r .FDNS_A[]|cut -d',' -f2|sort -u
-```
-```
-curl "https://tls.bufferover.run/dns?q=$DOMAIN" | jq -r .Results'[]' | rev | cut -d ',' -f1 | rev | sort -u | grep "\.$DOMAIN"
-```
-### Get Subdomains from Riddler.io
-```
-curl -s "https://riddler.io/search/exportcsv?q=pld:domain.com" | grep -Po "(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u 
-```
-### Get Subdomains from VirusTotal
-```
-curl -s "https://www.virustotal.com/ui/domains/domain.com/subdomains?limit=40" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u
-```
-### Get Subdomain with cyberxplore
-```
-curl https://subbuster.cyberxplore.com/api/find?domain=yahoo.com -s | grep -Po "(([\w.-]*)\.([\w]*)\.([A-z]))\w+" 
-```
-### Get Subdomains from CertSpotter
-```
-curl -s "https://certspotter.com/api/v1/issuances?domain=domain.com&include_subdomains=true&expand=dns_names" | jq .[].dns_names | tr -d '[]"\n ' | tr ',' '\n'
-```
-### Get Subdomains from Archive
-```
-curl -s "http://web.archive.org/cdx/search/cdx?url=*.domain.com/*&output=text&fl=original&collapse=urlkey" | sed -e 's_https*://__' -e "s/\/.*//" | sort -u
-```
-### Get Subdomains from JLDC
-```
-curl -s "https://jldc.me/anubis/subdomains/domain.com" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u
-```
-### Get Subdomains from securitytrails
-```
-curl -s "https://securitytrails.com/list/apex_domain/domain.com" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | grep ".domain.com" | sort -u
-```
-### Bruteforcing subdomain using DNS Over
-```
-while read sub;do echo "https://dns.google.com/resolve?name=$sub.domain.com&type=A&cd=true" | parallel -j100 -q curl -s -L --silent  | grep -Po '[{\[]{1}([,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]|".*?")+[}\]]{1}' | jq | grep "name" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | grep ".domain.com" | sort -u ; done < wordlists.txt
-```
-### Get Subdomains With sonar.omnisint.io
-```
-curl --silent https://sonar.omnisint.io/subdomains/twitter.com | grep -oE "[a-zA-Z0-9._-]+\.twitter.com" | sort -u 
-```
-### Get Subdomains With synapsint.com
-```
-curl --silent -X POST https://synapsint.com/report.php -d "name=https%3A%2F%2Fdomain.com" | grep -oE "[a-zA-Z0-9._-]+\.domain.com" | sort -u 
-```
-### Get Subdomains from crt.sh
-```
-curl -s "https://crt.sh/?q=%25.$1&output=json" | jq -r '.[].name_value' | sed 's/\*\.//g' | sort -u
-```
-### Sort & Tested Domains from Recon.dev
-```
-curl "https://recon.dev/api/search?key=apikey&domain=example.com" |jq -r '.[].rawDomains[]' | sed 's/ //g' | sort -u |httpx -silent
-```
-________________________________________________________________________________________________________________________________________________________________
 # Finding XSS
 ```
 echo "target.com" | waybackurls | httpx -silent | Gxss -c 100 -p Xss | grep "URL" | cut -d '"' -f2 | sort -u | dalfox pipe
@@ -117,19 +60,10 @@ shodan domain TARGET | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python
 _________________________________________________________________________________________________________________________________________________________________
 # Finding Open-Redirection
 ```
-export LHOST="http://localhost"; gau $1 | gf redirect | qsreplace "$LHOST" | xargs -I % -P 25 sh -c 'curl -Is "%" 2>&1 | grep -q "Location: $LHOST" && echo "VULN! %"'
-```
-```
 waybackurls target.com | grep -a -i \=http | qsreplace 'https://evil.com' | while read host do;do curl -s -L $host -I|grep "https://evil.com" && echo -e "$host \033[0;31mVulnerable\n" ;done
 ```
 ```
-subfinder -silent -d domain | anew subdomains.txt | httpx -silent | anew urls.txt | hakrawler | anew endpoints.txt | while read url; do curl $url --insecure | haklistgen | anew wordlist.txt; done
-```
-```
-cat domains.txt | waybackurls | httpx -silent -timeout 2 -threads 100 | gf redirect | anew
-```
-```
-cat waybackurl.txt | gf url | tee url-redirect.txt && cat url-redirect.txt | parallel -j 10 curl --proxy http://127.0.0.1:8080 -sk > /dev/null
+cat waybackurl.txt | gf redirect | tee url-redirect.txt && cat url-redirect.txt | parallel -j 10 curl --proxy http://127.0.0.1:8080 -sk > /dev/null
 ```
 _________________________________________________________________________________________________________________________________________________________________
 # SubDomain TakeOver
