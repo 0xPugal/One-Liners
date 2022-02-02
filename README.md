@@ -92,7 +92,7 @@ feroxbuster -u https://target.com --insecure -d 1 -e -L 4 -w /usr/share/seclists
 cat targets | ./feroxbuster --stdin --silent -s 200 301 302 --redirects -x js | fff -s 200 -o js-files
 ```
 ```
-for URL in $(<live_cp_dyson_subs.txt); do ( ffuf -u "${URL}/FUZZ" -w ~/BugBounty/Wordlists/fuzz.txt/fuzz.txt -ac ); done
+for URL in $(<urls.txt); do ( ffuf -u "${URL}/FUZZ" -w wordlists.txt -ac ); done
 ```
 __________________________________________________________________________________________________________________________________________________________________
 # JS Recon
