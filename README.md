@@ -3,12 +3,34 @@
 
 ![jst-1-line](https://user-images.githubusercontent.com/75373225/148362632-424b3936-6c95-41e8-b296-4e0931e40f1e.png)
 
-## Subdomain Enum:
+# Subdomain Enumeration
+**from BufferOver.run**
 ```
-subfinder -d target.com -silent; assetfinder -subs-only target.com; findomanin -t target.com -quiet; amass enum -d target.com; python3 /path/sublist3r.py -d target.com -q; python3 /path/turbolister.py -d target.com -q | httpx -silent | sort -u >> live-subs.txt
+curl -s https://dns.bufferover.run/dns?q=.target.com | jq -r .FDNS_A[] | cut -d',' -f2 | sort -u | tee subs.txt
 ```
+**from Riddler.io**
+```
+curl -s "https://riddler.io/search/exportcsv?q=pld:target.com" | grep -Po "(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u | tee subs.txt
+```
+**from nmap**
 ```
 nmap --script hostmap-crtsh.nse target.com
+```
+**from CertSpotter**
+```
+curl -s "https://certspotter.com/api/v1/issuances?domain=target.com&include_subdomains=true&expand=dns_names" | jq .[].dns_names | grep -Po "(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u
+```
+**from Archive**
+```
+curl -s "http://web.archive.org/cdx/search/cdx?url=*.target.com/*&output=text&fl=original&collapse=urlkey" | sed -e 's_https*://__' -e "s/\/.*//" | sort -u
+```
+**from JLDC**
+```
+curl -s "https://jldc.me/anubis/subdomains/target.com" | grep -Po "((http|https):\/\/)?(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u
+```
+**from crt.sh**
+```
+curl -s "https://crt.sh/?q=%25.canva.com&output=json" | jq -r '.[].name_value' | sed 's/\*\.//g' | sort -u
 ```
 --------
 ## Subdomain Takeover:
