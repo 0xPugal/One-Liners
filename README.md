@@ -194,6 +194,11 @@ subfinder -silent -d target.com | filter-resolved | cf-check | sort -u | naabu -
 cat urls.txt | while read line ; do echo "QUIT" | openssl s_client -connect $line:443 2>&1 | grep 'server extension "heartbeat" (id=15)' || echo $line; safe; done
 ```
 ------------------
+## Scan IPs
+```
+cat my_ips.txt | xargs -L100 shodan scan submit --wait 0
+```
+---------------------
 ***More Scripts Coming Sooon :)***
 __________________________________________________________________________________________________________________________________________________________________
 ### Support :)
