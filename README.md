@@ -7,6 +7,9 @@
 ```
 subfinder -d target.com -silent; assetfinder -subs-only target.com; findomanin -t target.com -quiet; amass enum -d target.com; python3 /path/sublist3r.py -d target.com -q; python3 /path/turbolister.py -d target.com -q | httpx -silent | sort -u >> live-subs.txt
 ```
+```
+nmap --script hostmap-crtsh.nse target.com
+```
 --------
 ## Subdomain Takeover:
 ```
