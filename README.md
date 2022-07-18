@@ -1,10 +1,10 @@
 # One-Liner-Scripts
-***A collection of awesome one-liner scripts for Bug Bounty Hunting, && Web Hacking***
+## A collection of awesome one-liner scripts for Bug Bounty Hunting
 
-***Thanks to all who create this One Liners***
-
-![jst-1-line](https://user-images.githubusercontent.com/75373225/148362632-424b3936-6c95-41e8-b296-4e0931e40f1e.png)
-
+###### Thanks to all who create these Awesome One Liners❤️
+----------------------
+![Screenshot from 2022-07-18 12-48-43](https://user-images.githubusercontent.com/75373225/179462105-8c16e1a2-7c5f-4357-9c78-09a8ed238737.png) 
+---------------------------
 # Subdomain Enumeration
 **Juicy Subdomains**
 ```
