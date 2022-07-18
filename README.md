@@ -1,6 +1,8 @@
 # One-Liner-Scripts
 ***A collection of awesome one-liner scripts for Bug Bounty Hunting, && Web Hacking***
 
+***Thanks to all who create this One Liners***
+
 ![jst-1-line](https://user-images.githubusercontent.com/75373225/148362632-424b3936-6c95-41e8-b296-4e0931e40f1e.png)
 
 # Subdomain Enumeration
