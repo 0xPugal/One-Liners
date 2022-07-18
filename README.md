@@ -231,5 +231,6 @@ echo cidr | httpx -t 100 | nuclei -t ~/nuclei-templates/ssl/ssl-dns-names.yaml |
 ---------------------
 ***More Scripts Coming Sooon :)***
 __________________________________________________________________________________________________________________________________________________________________
-### Support :)
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/paypalme/litt1eb0y)
+<h3 align="left">Support:</h3>
+<p><a href="https://www.buymeacoffee.com/litt1eb0y"> <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="litt1eb0y" /></a></p><br> <br>
+<br><p><a href="https://www.paypal.com/paypalme/litt1eb0y"> <img align="left" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" /></a></p><br>
