@@ -1,9 +1,8 @@
 # One-Liner-Scripts
-## A collection of awesome one-liner scripts for Bug Bounty Hunting
 
 ###### Thanks to all who create these Awesome One Liners❤️
 ----------------------
-![Screenshot from 2022-07-18 12-48-43](https://user-images.githubusercontent.com/75373225/179462105-8c16e1a2-7c5f-4357-9c78-09a8ed238737.png) 
+![image](https://user-images.githubusercontent.com/75373225/180003557-59bf909e-95e5-4b31-b4f8-fc05532f9f7c.png)
 ---------------------------
 # Subdomain Enumeration
 **Juicy Subdomains**
@@ -12,11 +11,11 @@ subfinder -d target.com -silent | dnsprobe -silent | cut -d ' ' -f1  | grep --co
 ```
 **from BufferOver.run**
 ```
-curl -s https://dns.bufferover.run/dns?q=.target.com | jq -r .FDNS_A[] | cut -d',' -f2 | sort -u | tee subs.txt
+curl -s https://dns.bufferover.run/dns?q=.target.com | jq -r .FDNS_A[] | cut -d',' -f2 | sort -u 
 ```
 **from Riddler.io**
 ```
-curl -s "https://riddler.io/search/exportcsv?q=pld:target.com" | grep -Po "(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u | tee subs.txt
+curl -s "https://riddler.io/search/exportcsv?q=pld:target.com" | grep -Po "(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u 
 ```
 **from nmap**
 ```
@@ -36,7 +35,23 @@ curl -s "https://jldc.me/anubis/subdomains/target.com" | grep -Po "((http|https)
 ```
 **from crt.sh**
 ```
-curl -s "https://crt.sh/?q=%25.canva.com&output=json" | jq -r '.[].name_value' | sed 's/\*\.//g' | sort -u
+curl -s "https://crt.sh/?q=%25.target.com&output=json" | jq -r '.[].name_value' | sed 's/\*\.//g' | sort -u
+```
+**from ThreatMiner**
+```
+curl -s "https://api.threatminer.org/v2/domain.php?q=target.com&rt=5" | jq -r '.results[]' |grep -o "\w.*target.com" | sort -u
+```
+**from Anubis**
+```
+curl -s "https://jldc.me/anubis/subdomains/target.com" | jq -r '.' | grep -o "\w.*target.com"
+```
+**from ThreatCrowd**
+```
+curl -s "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain=target.com" | jq -r '.subdomains' | grep -o "\w.*target.com"
+```
+**from HackerTarget**
+```
+curl -s "https://api.hackertarget.com/hostsearch/?q=target.com"
 ```
 --------
 ## Subdomain Takeover:
