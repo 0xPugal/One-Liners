@@ -1,4 +1,4 @@
-# One-Liner-Scripts [![Awesome](https://awesome.re/badge-flat2.svg)](https://awesome.re)
+# One-Liners [![Awesome](https://awesome.re/badge-flat2.svg)](https://awesome.re)
 
 ###### Thanks to all who create these Awesome One Liners❤️
 ----------------------
