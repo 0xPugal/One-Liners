@@ -138,6 +138,9 @@ dirsearch -l urls.txt -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,as
 for URL in $(<targets.txt); do ( ffuf -u "${URL}/FUZZ" -w wordlists.txt -ac ); done
 ```
 ```
+cat targets.txt | xargs -I@ sh -c 'ffuf -w wordlists.txt -u @/FUZZ -mc 200 -H "Content-Type: application/json" -H "X-Forwarded-For:127.0.0.1"'
+```
+```
 ffuf -c -u target.com -H "Host: FUZZ" -w wordlist.txt 
 ```
 **Search for Sensitive files from Wayback**
@@ -151,6 +154,10 @@ cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/s/123cfx/_/
 ## SQLi:
 ```
 cat subs.txt | httpx -silent | anew | waybackurls | gf sqli >> sqli ; sqlmap -m sqli -batch --random-agent --level 5 --risk 3
+```
+***Bypass WAF using TOR***
+```
+sqlmap -r request.txt --time-sec=10 --tor --tor-type=SOCKS5 --check-tor
 ```
 ----------------
 ## CORS:
@@ -233,7 +240,7 @@ cat my_ips.txt | xargs -L100 shodan scan submit --wait 0
 ```
 ## Portscan
 ```
-naabu -1 target.txt -rate 3000 -retries 1 -warm-up-time 0 -c 50 -ports 1-65535 -silent -o out.txt
+naabu -l targets.txt -rate 3000 -retries 3 -warm-up-time 0 -rate 150 -c 50 -ports 1-65535 -silent -o out.txt
 ```
 ## Screenshots using Nuclei
 ```
@@ -242,6 +249,9 @@ nuclei -l target.txt -headless -t nuclei-templates/headless/screenshot.yaml -v
 ## IPs from CIDR
 ```
 echo cidr | httpx -t 100 | nuclei -t ~/nuclei-templates/ssl/ssl-dns-names.yaml | cut -d " " -f7 | cut -d "]" -f1 |  sed 's/[//' | sed 's/,/\n/g' | sort -u 
+```
+```
+mapcidr -cidr <CIDR> -silent
 ```
 ## SQLmap Tamper Scripts - WAF bypass
 ```
