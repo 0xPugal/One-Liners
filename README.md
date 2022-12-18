@@ -266,8 +266,10 @@ mapcidr -cidr <CIDR> -silent
 sqlmap -u 'http://www.site.com/search.cmd?form_state=1' --level=5 --risk=3 --tamper=apostrophemask,apostrophenullencode,base64encode,between,chardoubleencode,charencode,charunicodeencode,equaltolike,greatest,ifnull2ifisnull,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,space2comment,space2plus,space2randomblank,unionalltounion,unmagicquotes
  --no-cast --no-escape --dbs --random-agent
 ```
+## Shodan Cli
+```
+shodan search Ssl.cert.subject.CN:"target.com" 200 --field ip_str | httpx -silent | tee ips.txt
+```
 
  > **More Scripts Coming Sooon :)**
-__________________________________________________________________________________________________________________________________________________________________
-<h3 align="left">Support:</h3>
-<p><a href="https://www.buymeacoffee.com/litt1eb0y"> <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="litt1eb0y" /></a></p> 
+_______________________________________________________________________________________________________________________________
