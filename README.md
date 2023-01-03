@@ -270,6 +270,9 @@ sqlmap -u 'http://www.site.com/search.cmd?form_state=1' --level=5 --risk=3 --tam
 ```
 shodan search Ssl.cert.subject.CN:"target.com" 200 --field ip_str | httpx -silent | tee ips.txt
 ```
-
+### ffuf txt output
+```
+ffuf -w wordlists.txt -u URL/FUZZ -r -ac -v &>> output.txt ; sed -i 's/\:\: Progress.*Errors.*\:\://g' output.txt ; sed -i 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' output.txt
+```
  > **More Scripts Coming Sooon :)**
 _______________________________________________________________________________________________________________________________
