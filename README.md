@@ -250,5 +250,9 @@ shodan search Ssl.cert.subject.CN:"target.com" 200 --field ip_str | httpx -silen
 ```
 ffuf -w wordlists.txt -u URL/FUZZ -r -ac -v &>> output.txt ; sed -i 's/\:\: Progress.*Errors.*\:\://g' output.txt ; sed -i 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' output.txt
 ```
+### Ffuf json to only url
+```
+cat ffuf.json | jq | grep "url" | sed 's/"//g' | sed 's/url://g' | sed 's/^ *//' | sed 's/,//g'
+```
  > **More Scripts Coming Sooon :)**
 _______________________________________________________________________________________________________________________________
