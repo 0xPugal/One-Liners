@@ -254,5 +254,9 @@ ffuf -w wordlists.txt -u URL/FUZZ -r -ac -v &>> output.txt ; sed -i 's/\:\: Prog
 ```
 cat ffuf.json | jq | grep "url" | sed 's/"//g' | sed 's/url://g' | sed 's/^ *//' | sed 's/,//g'
 ```
+## Recon Oneliner from Stok
+```
+subfinder -d uber.com -silent | anew uber-subs.txt | dnsx -resp -silent | anew uber-alive-subs-ip.txt | awk '{print $1}' | anew uber-alive-subs.txt | naabu -p 21,22,23,80, 81,300,443, 591,593,832,981, 1010, 1311, 2082, 2087,2095,2096, 2480, 3000,3128, 3333, 3389, 4243, 4567,4711, 4712,4993, 5000, 5104, 5108, 5800, 6543, 7000, 7396,7474,8000, 8001, 8008, 8014, 8042, 8069, 8080, 8081, 8088, 8090, 8091, 8118, 8123,8172,8222, 8243,8280,8281, 8333, 8443, 8500, 8834, 8880, 8888, 8983, 9000, 9043, 9060, 9080, 9090, 9091, 9093,9200,9443,9800, 9981, 12443,16080, 18091,18092,20720, 28017 -silent | anew uber-openports.txt | cut -d ":" -f1 | naabu -passive -silent | anew uber-openports.txt | httpx -silent -title -status-code -mc 200, 403,400,500 | anew uber-web-alive.txt | awk '{print $1}' | gospider -t10 -q -o ubercrawl | anew uber-crawled.txt | unfurl format %s://dtp | httpx -silent -title -status-code -mc 403,400,500 | anew uber-crawled-interesting.txt | awk '{print $1}' | gau -b eot, svg, woff, ttf, png, jpg, gif, otf, bmp, pdf, mp3, mp4, mov -subs | anew uber-gau.txt | httpx -silent -title -status-code -mc 200,403,400,500 | anew uber-web-alive.txt | awk '{print $1}'| nuclei -t uber.yaml | notify
+```
  > **More Scripts Coming Sooon :)**
 _______________________________________________________________________________________________________________________________
