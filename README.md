@@ -263,4 +263,6 @@ subfinder -d moonpay.com -silent | anew moonpay-subs.txt | dnsx -resp -silent | 
 curl https://raw.githubusercontent.com/udhos/update-golang/master/update-golang.sh|sudo bash
 ```
  > **More Scripts Coming Sooon :)**
-_______________________________________________________________________________________________________________________________
+____________________________________________________________________________________________________________________________
+## Support Me
+<a href="https://www.buymeacoffee.com/0xPugazh" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
