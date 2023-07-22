@@ -121,7 +121,11 @@ cat subs.txt | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python3 http:/
 dirsearch -l urls.txt -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --deep-recursive --force-recursive --exclude-sizes=0B --random-agent --full-url -o output.txt
 ```
 ```
-ffuf -c -w urls.txt:FUZZ1 -w wordlist.txt:FUZZ2 -u FUZZ1/FUZZ2 -mc 200 -ac -v -of html -o output
+ffuf -c -w urls.txt:FUZZ1 -w wordlist.txt:FUZZ2 -u FUZZ1/FUZZ2 -mc 200 -ac -v -of json -o output
+```
+## ffuf json to txt output
+```
+cat output.json | jq | grep -o '"url": ".*"' | grep -o 'https://[^"]*'
 ```
 **Search for Sensitive files from Wayback**
 ```
