@@ -266,6 +266,11 @@ subfinder -d moonpay.com -silent | anew moonpay-subs.txt | dnsx -resp -silent | 
 ```
 curl https://raw.githubusercontent.com/udhos/update-golang/master/update-golang.sh|sudo bash
 ```
+
+## Censys CLI
+```
+censys search "taregt.com" --index-type hosts | jq -c '.[] | {ip: .ip}' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
+```
  > **More Scripts Coming Sooon :)**
 ____________________________________________________________________________________________________________________________
 ## Support Me
