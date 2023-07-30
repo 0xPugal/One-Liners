@@ -121,7 +121,7 @@ cat subs.txt | awk '{print $3}'| httpx -silent | xargs -I@ sh -c 'python3 http:/
 dirsearch -l urls.txt -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json --deep-recursive --force-recursive --exclude-sizes=0B --random-agent --full-url -o output.txt
 ```
 ```
-ffuf -c -w urls.txt:FUZZ1 -w wordlist.txt:FUZZ2 -u FUZZ1/FUZZ2 -mc 200 -ac -v -of json -o output
+ffuf -c -w urls.txt:FUZZ1 -w wordlist.txt:FUZZ2 -u FUZZ1/FUZZ2 -mc 200 -ac -recursion -v -of json -o output
 ```
 ## ffuf json to txt output
 ```
@@ -238,9 +238,6 @@ nuclei -l target.txt -headless -t nuclei-templates/headless/screenshot.yaml -v
 ```
 echo cidr | httpx -t 100 | nuclei -t ~/nuclei-templates/ssl/ssl-dns-names.yaml | cut -d " " -f7 | cut -d "]" -f1 |  sed 's/[//' | sed 's/,/\n/g' | sort -u 
 ```
-```
-mapcidr -cidr <CIDR> -silent
-```
 ## SQLmap Tamper Scripts - WAF bypass
 ```
 sqlmap -u 'http://www.site.com/search.cmd?form_state=1' --level=5 --risk=3 --tamper=apostrophemask,apostrophenullencode,base64encode,between,chardoubleencode,charencode,charunicodeencode,equaltolike,greatest,ifnull2ifisnull,multiplespaces,nonrecursivereplacement,percentage,randomcase,securesphere,space2comment,space2plus,space2randomblank,unionalltounion,unmagicquotes
@@ -248,7 +245,7 @@ sqlmap -u 'http://www.site.com/search.cmd?form_state=1' --level=5 --risk=3 --tam
 ```
 ## Shodan Cli
 ```
-shodan search Ssl.cert.subject.CN:"target.com" 200 --field ip_str | httpx -silent | tee ips.txt
+shodan search Ssl.cert.subject.CN:"target.com" --field ip_str | httpx -silent | tee ips.txt
 ```
 ### ffuf txt output
 ```
@@ -269,9 +266,8 @@ curl https://raw.githubusercontent.com/udhos/update-golang/master/update-golang.
 
 ## Censys CLI
 ```
-censys search "taregt.com" --index-type hosts | jq -c '.[] | {ip: .ip}' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
+censys search "target.com" --index-type hosts | jq -c '.[] | {ip: .ip}' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
 ```
- > **More Scripts Coming Sooon :)**
 ____________________________________________________________________________________________________________________________
 ## Support Me
 <a href="https://www.buymeacoffee.com/0xPugazh" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
