@@ -53,6 +53,9 @@ curl -s "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain=target.c
 ```
 curl -s "https://api.hackertarget.com/hostsearch/?q=target.com"
 ```
+**from aleinvault**
+https://otx.alienvault.com/api/v1/indicators/domain/tesla.com/url_list?limit=100&page=1
+
 ***SubDomain Bruteforcing - ffuf***
 ```
 ffuf -u https://FUZZ.target.com -w dns.txt -v | grep "| URL |" | awk '{print $4}'
