@@ -7,7 +7,7 @@
 # Subdomain Enumeration
 **Juicy Subdomains**
 ```
-subfinder -d target.com -silent | dnsprobe -silent | cut -d ' ' -f1  | grep --color 'api\|dev\|stg\|test\|admin\|demo\|stage\|pre\|vpn'
+subfinder -d target.com -silent | dnsx -silent | cut -d ' ' -f1  | grep --color 'api\|dev\|stg\|test\|admin\|demo\|stage\|pre\|vpn'
 ```
 **from BufferOver.run**
 ```
