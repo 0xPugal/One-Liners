@@ -17,6 +17,10 @@ curl -s https://dns.bufferover.run/dns?q=.target.com | jq -r .FDNS_A[] | cut -d'
 ```
 curl -s "https://riddler.io/search/exportcsv?q=pld:target.com" | grep -Po "(([\w.-]*)\.([\w]*)\.([A-z]))\w+" | sort -u 
 ```
+**from RedHunt Labs Recon API**
+```
+curl --request GET --url 'https://reconapi.redhuntlabs.com/community/v1/domains/subdomains?domain=<target.com>&page_size=1000' --header 'X-BLOBR-KEY: API_KEY' | jq '.subdomains[]' -r
+```
 **from nmap**
 ```
 nmap --script hostmap-crtsh.nse target.com
