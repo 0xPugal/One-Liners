@@ -4,6 +4,10 @@
 ----------------------
 ![image](https://user-images.githubusercontent.com/75373225/180003557-59bf909e-95e5-4b31-b4f8-fc05532f9f7c.png)
 ---------------------------
+## One Line recon using pd tools
+```
+subfinder -d redacted.com -all | anew subs.txt; shuffledns -d redacted.com -r resolvers.txt -w n0kovo_subdomains_huge.txt | anew subs.txt; dnsx -l subs.txt -r resolvers.txt | anew resolved.txt; naabu -l resolved.txt -nmap -rate 5000 | anew ports.txt; httpx -l ports .txt | anew alive.txt; katana -list alive.txt -kf all -jc | anew urls.txt; nuclei -l urls.txt -es info, unknown -ept ssl -ss template-spray | anew nuclei.txt
+```
 # Subdomain Enumeration
 **Juicy Subdomains**
 ```
