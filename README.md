@@ -65,6 +65,10 @@ curl -s "https://api.hackertarget.com/hostsearch/?q=target.com"
 ```
 curl -s "https://otx.alienvault.com/api/v1/indicators/domain/tesla.com/url_list?limit=100&page=1" | grep -o '"hostname": *"[^"]*' | sed 's/"hostname": "//' | sort -u
 ```
+**from Censys**
+```
+censys subdomains target.com
+```
 --------
 ## Subdomain Takeover:
 ```
