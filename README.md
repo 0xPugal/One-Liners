@@ -291,6 +291,12 @@ curl https://chaos-data.projectdiscovery.io/index.json | jq -M '.[] | .URL | @sh
 ```
 wget https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/master/data/domains.txt -nv
 ```
+### grep only nuclei info
+```
+result=$(sed -n 's/^\([^ ]*\) \([^ ]*\) \([^ ]*\) \([^ ]*\).*/\1 \2 \3 \4/p' file.txt)
+echo "$result"
+```
+``[sqli-error-based:oracle] [http] [critical] https://test.com/en/events/e5?utm_source=test'&utm_medium=FUZZ'``
 ____________________________________________________________________________________________________________________________
 ## Support Me
 <a href="https://www.buymeacoffee.com/0xPugazh" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
