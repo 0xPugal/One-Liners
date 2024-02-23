@@ -1,5 +1,8 @@
 # One-Liners [![Awesome](https://awesome.re/badge-flat2.svg)](https://awesome.re)
 
+### Get 200$ credits on DO
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=87789189e3ea&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+
 ###### Thanks to all who create these Awesome One Liners❤️
 ----------------------
 ![image](https://user-images.githubusercontent.com/75373225/180003557-59bf909e-95e5-4b31-b4f8-fc05532f9f7c.png)
