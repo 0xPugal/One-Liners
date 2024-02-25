@@ -72,6 +72,10 @@ curl -s "https://otx.alienvault.com/api/v1/indicators/domain/tesla.com/url_list?
 ```
 censys subdomains target.com
 ```
+**from subdomain center**
+```
+curl "https://api.subdomain.center/?domain=target.com" | jq -r '.[]' | sort -u
+```
 --------
 ## Subdomain Takeover:
 ```
