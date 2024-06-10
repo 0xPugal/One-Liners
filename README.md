@@ -145,6 +145,14 @@ subfinder -d target.com -all -silent | httpx -silent -threads 100 | anew alive.t
 ```
 cat target.txt | (gau || hakrawler || waybackurls || katana) | grep -i -E "\.js" | egrep -v "\.json|\.jsp" | anew js.txt
 ```
+```
+while read -r url; do
+  if curl -s -o /dev/null -w "%{http_code}" "$url" | grep -q 200 && \
+     curl -s -I "$url" | grep -iq 'Content-Type:.*\(text/javascript\|application/javascript\)'; then
+    echo "$url"
+  fi
+done < urls.txt > js.txt
+```
 ### Hidden Params in JS:
 ```
 cat subs.txt | (gau || hakrawler || waybackurls || katana) | sort -u | httpx -silent -threads 100 | grep -Eiv '(.eot|.jpg|.jpeg|.gif|.css|.tif|.tiff|.png|.ttf|.otf|.woff|.woff2|.ico|.svg|.txt|.pdf)' | while read url; do vars=$(curl -s $url | grep -Eo "var [a-zA-Z0-9]+" | sed -e 's,'var','"$url"?',g' -e 's/ //g' | grep -Eiv '\.js$|([^.]+)\.js|([^.]+)\.js\.[0-9]+$|([^.]+)\.js[0-9]+$|([^.]+)\.js[a-z][A-Z][0-9]+$' | sed 's/.*/&=FUZZ/g'); echo -e "\e[1;33m$url\e[1;32m$vars";done
@@ -204,6 +212,26 @@ echo "$result"
 ``[sqli-error-based:oracle] [http] [critical] https://test.com/en/events/e5?utm_source=test'&utm_medium=FUZZ'``
 ### Download js files
 ```
+## curl
 mkdir -p js_files; while IFS= read -r url || [ -n "$url" ]; do filename=$(basename "$url"); echo "Downloading $filename JS..."; curl -sSL "$url" -o "downloaded_js_files/$filename"; done < "$1"; echo "Download complete."
+
+## wget
+sed -i 's/\r//' js.txt && for i in $(cat js.txt); do wget "$i"; done
+```
+### Filter only html/xml content-types for xss
+```
+cat urls.txt | httpx -ct -silent -mc 200 -nc | grep -i -E "text/html|text/xml" | cut -d '[' -f 1 | anew xml_html.txt
+
+## using curl
+while read -r url; do
+  if curl -s -o /dev/null -w "%{http_code}" "$url" | grep -q 200 && \
+     curl -s -I "$url" | grep -iq 'Content-Type:.*text/\(html\|xml\)'; then
+    echo "$url"
+  fi
+done < urls.txt > xml_html.txt
+```
+### Get favicon hash
+```
+curl https://favicon-hash.kmsec.uk/api/?url=https://test.com/favicon.ico | jq
 ```
 
