@@ -235,3 +235,8 @@ done < urls.txt > xml_html.txt
 curl https://favicon-hash.kmsec.uk/api/?url=https://test.com/favicon.ico | jq
 ```
 
+### Build wordlists from a nuclei templates
+```
+for i in `grep -R yaml | awk -F: '{print $1}'`; do cat $i | grep 'BaseURL}}/' | awk -F '{{BaseURL}}' '{print $2}' | sed 's/"//g' | sed "s/'//g"; done
+```
+
