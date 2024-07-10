@@ -108,7 +108,8 @@ ffuf -c -w urls.txt:URL -w wordlist.txt:FUZZ -u URL/FUZZ -mc all -fc 500,502 -ac
 ```
 ## ffuf json to txt output
 ```
-cat output.json | jq | grep -o '"url": ".*"' | grep -o 'https://[^"]*'
+cat output.json | jq | grep -o '"url": "http[^"]*"' | grep -o 'http[^"]*' | anew out.txt
+
 ```
 **Search for Sensitive files from Wayback**
 ```
@@ -203,7 +204,7 @@ cat cidr.txt | xargs -I @ sh -c 'nmap -v -sn @ | egrep -v "host down" | grep "Nm
 ### Xray urls scan
 ```
 for i in $(cat subs.txt); do ./xray_linux_amd64 ws --basic-crawler $i --plugins xss,sqldet,xxe,ssrf,cmd-injection,path-traversal --ho $(date +"%T").html ; done
-```
+```  
 ### grep only nuclei info
 ```
 result=$(sed -n 's/^\([^ ]*\) \([^ ]*\) \([^ ]*\) \([^ ]*\).*/\1 \2 \3 \4/p' file.txt)
