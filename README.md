@@ -224,7 +224,7 @@ sed -i 's/\r//' js.txt && for i in $(cat js.txt); do wget "$i"; done
 ```
 ### Filter only html/xml content-types for xss
 ```
-cat urls.txt | httpx -ct -silent -mc 200 -nc | grep -i -E "text/html|text/xml" | cut -d '[' -f 1 | anew xml_html.txt
+cat urls.txt | grep "=" | grep "?" | uro | httpx -ct -silent -nc | grep -i -E "text/html|application/xhtml+xml|application/xml|text/xml|image/svg+xml" | cut -d '[' -f 1 | anew xml_html.txt
 
 ## using curl
 while read -r url; do
